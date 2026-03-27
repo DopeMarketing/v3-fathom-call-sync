@@ -1,124 +1,127 @@
 # V3 Fathom Call Sync
 
-> Seamlessly sync all your Fathom transcripts to Google Drive with one click
-
-A dashboard-heavy tool that connects your Fathom account to Google Drive, automatically fetching and uploading all meeting transcripts as organized text files. Perfect for personal knowledge management and backup.
+> A tool that connects Fathom to Google Drive and syncs all transcripts automatically.
 
 ## What this does
 
-- **One-click OAuth** for both Fathom and Google Drive APIs
-- **Bulk transcript export** that fetches all available transcripts
-- **Smart duplicate detection** to avoid re-uploading existing files
-- **Real-time sync dashboard** showing upload progress and status
-- **Manual sync triggers** for on-demand exports
+V3 Fathom Call Sync is a personal productivity tool that bridges Fathom (meeting recording platform) with Google Drive. It automatically fetches all your Fathom transcripts and uploads them as organized text files to your Google Drive, with smart duplicate detection and a clean dashboard to monitor sync status.
 
-## Who this is for
-
-Personal users who want to:
-- Back up Fathom transcripts to Google Drive
-- Organize meeting notes in their preferred file structure
-- Access transcripts offline or share them easily
-- Integrate transcripts into broader knowledge management workflows
+**Built for:** Personal use by individuals who use Fathom for meeting recordings and want transcripts stored in Google Drive for easy access and organization.
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router
-- **Database**: Supabase (PostgreSQL)
-- **Styling**: Tailwind CSS
-- **Language**: TypeScript
-- **Deployment**: Vercel
-- **Integrations**: Google Drive API, Fathom API, n8n, Pipedream, Google Sheets API
+- **Frontend:** Next.js 15, TypeScript, Tailwind CSS
+- **Backend:** Next.js API routes, Supabase (PostgreSQL + Auth)
+- **Integrations:** Google Drive API, Fathom API, n8n, Pipedream, Google Sheets
+- **Deployment:** Vercel
+- **Database:** PostgreSQL via Supabase
 
 ## Prerequisites
 
-- Node.js 18+ and npm
-- Supabase account and project
+- Node.js 18+
+- npm or yarn
+- Supabase CLI
 - Google Cloud Console project with Drive API enabled
 - Fathom account with API access
 
 ## Local Setup
 
-1. **Clone and install**
+1. **Clone the repository**
    bash
    git clone <repository-url>
    cd v3-fathom-call-sync
+   
+
+2. **Install dependencies**
+   bash
    npm install
    
 
-2. **Environment variables**
+3. **Set up Supabase**
+   bash
+   supabase start
+   supabase db reset
+   
+
+4. **Configure environment variables**
+   Copy `.env.example` to `.env.local` and fill in the values:
    bash
    cp .env.example .env.local
-   # Fill in all required values (see table below)
    
 
-3. **Start Supabase**
-   bash
-   npx supabase start
-   
-
-4. **Run development server**
+5. **Start development server**
    bash
    npm run dev
    
 
-5. **Open** [http://localhost:3000](http://localhost:3000)
+   Visit `http://localhost:3000`
 
 ## Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|---------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key for server operations | Yes |
-| `GOOGLE_DRIVE_CLIENT_ID` | Google OAuth client ID | Yes |
-| `GOOGLE_DRIVE_CLIENT_SECRET` | Google OAuth client secret | Yes |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key for server-side operations | Yes |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID for Drive API access | Yes |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret | Yes |
 | `FATHOM_CLIENT_ID` | Fathom API client ID | Yes |
 | `FATHOM_CLIENT_SECRET` | Fathom API client secret | Yes |
-| `NEXTAUTH_SECRET` | Random string for session encryption | Yes |
-| `NEXTAUTH_URL` | Your app's URL (http://localhost:3000 for dev) | Yes |
+| `NEXTAUTH_URL` | Base URL for OAuth callbacks (http://localhost:3000 in dev) | Yes |
+| `NEXTAUTH_SECRET` | Random secret for NextAuth.js | Yes |
+| `N8N_WEBHOOK_URL` | Optional n8n webhook URL for workflow triggers | No |
+| `PIPEDREAM_API_KEY` | Optional Pipedream API key for workflow integration | No |
 
 ## Database Setup
 
-The database schema is automatically applied when you run `npx supabase start`. It includes:
+The database schema is automatically applied when you run `supabase db reset`. The schema includes:
 
-- `users` - User accounts and profiles
-- `oauth_connections` - Stored OAuth tokens for external services
+- `users` - User profiles and settings
+- `oauth_connections` - Stored OAuth tokens for integrations
 - `sync_configurations` - User sync preferences and settings
-- `fathom_transcripts` - Cached transcript metadata from Fathom
-- `sync_jobs` - Background sync job tracking
-- `sync_job_items` - Individual file upload tracking
-- `uploaded_files` - Record of successfully uploaded files
+- `fathom_transcripts` - Cached Fathom transcript metadata
+- `sync_jobs` - Sync operation tracking
+- `sync_job_items` - Individual file sync status
+- `uploaded_files` - Google Drive upload tracking
 
 ## Deploy to Vercel
 
-1. **Connect repository** to Vercel
-2. **Set environment variables** in Vercel dashboard
-3. **Deploy** - Vercel will automatically build and deploy
+1. **Connect to Vercel**
+   bash
+   npm run build
+   vercel
+   
+
+2. **Set environment variables in Vercel dashboard**
+   - Add all environment variables from the table above
+   - Update `NEXTAUTH_URL` to your production domain
+
+3. **Update OAuth redirect URIs**
+   - Google Console: Add `https://yourdomain.com/auth/google/callback`
+   - Fathom Dashboard: Add `https://yourdomain.com/auth/fathom/callback`
 
 ## Project Structure
 
 
-src/
-├── app/                 # Next.js 15 App Router
-│   ├── (auth)/         # Authentication pages
-│   ├── dashboard/      # Main dashboard
-│   ├── api/           # API routes
-│   └── globals.css    # Global styles
-├── components/         # Reusable UI components
-├── lib/               # Utilities and configurations
-├── db/                # Database access layer
-├── actions/           # Server actions
-└── types/             # TypeScript type definitions
+├── app/                    # Next.js 15 app directory
+│   ├── (dashboard)/       # Dashboard pages (authenticated)
+│   ├── auth/              # OAuth callback handlers
+│   ├── api/               # API routes
+│   └── globals.css        # Global styles
+├── components/            # Reusable UI components
+├── lib/                   # Business logic and utilities
+├── actions/              # Server actions
+├── db/                   # Database queries and utilities
+├── types/                # TypeScript type definitions
+├── supabase/             # Database migrations and config
+└── public/               # Static assets
 
 
-## Key Features
+## Getting Help
 
-- **OAuth Authentication**: Secure token storage for both APIs
-- **Bulk Export**: Efficiently handles large transcript collections
-- **Duplicate Detection**: Smart file comparison prevents duplicates
-- **Status Dashboard**: Real-time progress tracking
-- **Manual Triggers**: On-demand sync capabilities
+This is a personal project scaffold. Check the following files for development guidance:
 
-## Contributing
-
-This is a personal project, but contributions are welcome! Please read `CLAUDE.md` for development guidelines.
+- `CLAUDE.md` - AI assistant development guide
+- `TECHNICAL_DEBT.md` - Known shortcuts and improvements needed
+- `ROADMAP.md` - Feature development plan
+- `CHANGELOG.md` - Version history

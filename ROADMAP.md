@@ -2,63 +2,63 @@
 
 > These are Claude Code hours — time working with AI assistance, not traditional development hours. A developer working alone would multiply these by 3-5x.
 
-## Total estimated: 87 Claude Code hours
+## Total estimated: 127 Claude Code hours
 
 ## v1 — Ship it
 
-### One-click OAuth authentication (~8 hours)
-Implement secure OAuth flows for both Fathom API and Google Drive API with token storage, refresh logic, and connection status indicators.
+### One-click OAuth Authentication (~8 hours)
+Implement secure OAuth flows for both Fathom API and Google Drive API with token storage and refresh handling.
 
-### Bulk transcript export (~12 hours)
-Build the core sync engine that fetches all available Fathom transcripts and uploads them as organized text files to a designated Google Drive folder.
+### Bulk Transcript Export (~12 hours)
+Build the core sync engine that fetches all available Fathom transcripts and uploads them as organized text files to Google Drive.
 
-### Basic sync status dashboard (~6 hours)
-Create a real-time dashboard showing successful uploads, failed transfers, total transcript count, and recent sync history with progress indicators.
+### Basic Sync Status Dashboard (~6 hours)
+Create a clean dashboard showing successful uploads, failed transfers, total transcript count, and recent sync activity.
 
-### Manual sync trigger button (~4 hours)
-Implement on-demand sync functionality with background job processing, user notifications, and cancellation capabilities.
+### Manual Sync Trigger Button (~3 hours)
+Add a prominent sync button that allows users to manually trigger the export process and see real-time progress.
 
-### Smart duplicate detection and handling (~8 hours)
-Build intelligent file comparison logic that avoids re-uploading existing transcripts while handling modified files appropriately.
+### Smart Duplicate Detection (~5 hours)
+Implement logic to compare existing Drive files with Fathom transcripts to avoid re-uploading duplicates on subsequent syncs.
 
 ## Roadmap — Planned
 
-### Automated scheduled syncing (~6 hours)
-Implement background job scheduling for daily/weekly automatic syncing with user-configurable intervals and timezone handling.
+### Automated Scheduled Syncing (~8 hours)
+Add cron-based scheduling system that automatically syncs new Fathom transcripts daily or weekly based on user preferences.
 
-### Google Sheets integration (~8 hours)
-Create a master index spreadsheet with transcript metadata including date, duration, participants, and direct file links for easy organization.
+### Google Sheets Master Index (~10 hours)
+Create a comprehensive spreadsheet that catalogs all transcripts with metadata like date, duration, participants, and direct file links.
 
 ## Idea Board — Exploring
 
-### n8n workflow template generator (~10 hours)
-Build a system that creates ready-to-use n8n automation workflows for advanced users who want custom processing pipelines.
+### n8n Workflow Template Generator (~12 hours)
+Build a tool that generates ready-to-use n8n workflow templates for users who want advanced automation capabilities.
 
-### Transcript preprocessing options (~12 hours)
-Add intelligent text processing features like removing filler words, formatting improvements, and extracting action items before upload.
+### Transcript Preprocessing Engine (~15 hours)
+Add intelligent text processing to remove filler words, improve formatting, and extract action items before uploading to Drive.
 
-### Multi-folder organization system (~8 hours)
-Implement automatic sorting of transcripts by date, meeting type, or custom tags into separate Drive folders with configurable rules.
+### Multi-folder Organization System (~8 hours)
+Implement automatic sorting that organizes transcripts into separate Drive folders based on date, meeting type, or custom tags.
 
-### AI-powered meeting insights (~15 hours)
-Integrate AI to generate meeting summaries, extract key decisions, and identify action items from transcripts before uploading.
+### Advanced Search and Filtering (~10 hours)
+Create a powerful search interface that allows users to find specific transcripts by keywords, participants, or date ranges.
 
-### Slack integration for notifications (~5 hours)
-Send sync completion notifications and transcript summaries directly to designated Slack channels or DMs.
+### Transcript Analytics Dashboard (~12 hours)
+Provide insights on meeting patterns, speaking time analysis, and trending topics across all synced transcripts.
 
-### Advanced search and filtering (~8 hours)
-Build a powerful search interface that allows finding transcripts by content, participants, date ranges, or custom metadata.
+### Real-time Sync Notifications (~6 hours)
+Implement push notifications or email alerts when new transcripts are successfully synced to Google Drive.
 
-### Transcript versioning system (~6 hours)
-Track changes to transcripts over time and maintain version history for edited or updated meeting records.
+### Backup and Recovery System (~8 hours)
+Add functionality to backup sync configurations and restore transcripts if they're accidentally deleted from Drive.
 
-### Custom webhook integration (~4 hours)
-Allow users to configure custom webhooks that trigger when new transcripts are synced or processed.
+### Team Collaboration Features (~14 hours)
+Extend the tool to support team accounts where multiple users can sync transcripts to shared Google Drive folders.
 
 ## Integration work
 
-- Google Drive API — 6 hours to fully implement
-- Fathom API — 5 hours to fully implement
+- Google Drive API — 8 hours to fully implement
+- Fathom API — 6 hours to fully implement
 - Google Sheets API — 4 hours to fully implement
-- n8n workflows — 8 hours to fully implement
-- Pipedream connectors — 6 hours to fully implement
+- n8n Webhooks — 3 hours to fully implement
+- Pipedream Integration — 2 hours to fully implement

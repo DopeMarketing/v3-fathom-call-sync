@@ -4,13 +4,10 @@ import { cookies } from 'next/headers'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
-// Client-side Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Server-side Supabase client
-export const createServerSupabaseClient = async () => {
+export async function createServerSupabaseClient() {
   const cookieStore = await cookies()
   
   return createServerClient(
@@ -18,17 +15,19 @@ export const createServerSupabaseClient = async () => {
     supabaseAnonKey,
     {
       cookies: {
-        get: (key: string) => cookieStore.get(key)?.value,
-        set: (key: string, value: string, options: any) => {
-          cookieStore.set({ name: key, value, ...options })
+        getAll() {
+          return cookieStore.getAll()
         },
-        remove: (key: string, options: any) => {
-          cookieStore.set({ name: key, value: '', ...options })
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // The `setAll` method was called from a Server Component.
+          }
         },
       },
     }
   )
 }
-
-// Service role client for admin operations
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)

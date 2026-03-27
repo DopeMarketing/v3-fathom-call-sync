@@ -5,45 +5,47 @@ const sheets = google.sheets({
   auth: process.env.GOOGLE_SHEETS_API_KEY
 });
 
-export interface SheetData {
-  range: string;
-  majorDimension: string;
-  values: string[][];
-}
-
-export interface UpdateSheetParams {
+interface SheetData {
   spreadsheetId: string;
   range: string;
-  values: string[][];
+  values: any[][];
 }
 
-export async function getSheetData(spreadsheetId: string, range: string): Promise<SheetData> {
+interface SheetResponse {
+  spreadsheetId: string;
+  updatedCells: number;
+  updatedRows: number;
+}
+
+export async function appendRows(
+  sheetData: SheetData
+): Promise<SheetResponse> {
+  try {
+    const response = await sheets.spreadsheets.values.append({
+      spreadsheetId: sheetData.spreadsheetId,
+      range: sheetData.range,
+      valueInputOption: 'RAW',
+      requestBody: {
+        values: sheetData.values
+      }
+    });
+    return response.data as SheetResponse;
+  } catch (error) {
+    throw new Error(`Failed to append rows: ${error}`);
+  }
+}
+
+export async function getSheetData(
+  spreadsheetId: string,
+  range: string
+): Promise<any[][]> {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range
     });
-    return {
-      range: response.data.range!,
-      majorDimension: response.data.majorDimension!,
-      values: response.data.values || []
-    };
+    return response.data.values || [];
   } catch (error) {
     throw new Error(`Failed to get sheet data: ${error}`);
-  }
-}
-
-export async function updateSheetData(params: UpdateSheetParams): Promise<void> {
-  try {
-    await sheets.spreadsheets.values.update({
-      spreadsheetId: params.spreadsheetId,
-      range: params.range,
-      valueInputOption: 'RAW',
-      requestBody: {
-        values: params.values
-      }
-    });
-  } catch (error) {
-    throw new Error(`Failed to update sheet data: ${error}`);
   }
 }

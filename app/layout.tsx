@@ -17,25 +17,25 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <nav className="border-b bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center">
-                <h1 className="text-xl font-bold">V3 Fathom Sync</h1>
-              </div>
-              <div className="flex items-center space-x-4">
-                <a href="/" className="text-gray-600 hover:text-gray-900">Home</a>
-                <a href="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</a>
-                <a href="/connections" className="text-gray-600 hover:text-gray-900">Connections</a>
-                <a href="/history" className="text-gray-600 hover:text-gray-900">History</a>
-                <a href="/settings" className="text-gray-600 hover:text-gray-900">Settings</a>
+        <div className="min-h-screen bg-gray-50">
+          <header className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center py-4">
+                <h1 className="text-xl font-semibold text-gray-900">V3 Fathom Call Sync</h1>
+                <nav className="flex space-x-4">
+                  <a href="/" className="text-gray-600 hover:text-gray-900">Home</a>
+                  <a href="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</a>
+                  <a href="/connections" className="text-gray-600 hover:text-gray-900">Connections</a>
+                  <a href="/history" className="text-gray-600 hover:text-gray-900">History</a>
+                  <a href="/settings" className="text-gray-600 hover:text-gray-900">Settings</a>
+                </nav>
               </div>
             </div>
-          </div>
-        </nav>
-        <main className="min-h-screen bg-gray-50">
-          {children}
-        </main>
+          </header>
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   )

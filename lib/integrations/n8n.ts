@@ -1,53 +1,46 @@
-interface N8nClient {
-  baseURL: string;
-  apiKey: string;
-}
+import axios from 'axios';
 
-const client: N8nClient = {
-  baseURL: 'https://your-n8n-instance.com/api/v1',
-  apiKey: process.env.N8N_API_KEY!
-};
+const n8nClient = axios.create({
+  baseURL: 'https://api.n8n.io/api/v1',
+  headers: {
+    'X-N8N-API-KEY': process.env.N8N_API_KEY,
+    'Content-Type': 'application/json'
+  }
+});
 
-export interface Workflow {
-  id: string;
-  name: string;
-  active: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ExecuteWorkflowParams {
+interface WorkflowTrigger {
   workflowId: string;
   data?: Record<string, any>;
 }
 
-export async function getWorkflows(): Promise<Workflow[]> {
+interface WorkflowExecution {
+  id: string;
+  workflowId: string;
+  status: 'running' | 'success' | 'error';
+  startedAt: string;
+}
+
+export async function triggerWorkflow(
+  options: WorkflowTrigger
+): Promise<WorkflowExecution> {
   try {
-    const response = await fetch(`${client.baseURL}/workflows`, {
-      headers: {
-        'Authorization': `Bearer ${client.apiKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    const data = await response.json();
-    return data.workflows;
+    const response = await n8nClient.post(
+      `/workflows/${options.workflowId}/execute`,
+      { data: options.data }
+    );
+    return response.data;
   } catch (error) {
-    throw new Error(`Failed to get workflows: ${error}`);
+    throw new Error(`Failed to trigger workflow: ${error}`);
   }
 }
 
-export async function executeWorkflow(params: ExecuteWorkflowParams): Promise<any> {
+export async function getWorkflowStatus(
+  executionId: string
+): Promise<WorkflowExecution> {
   try {
-    const response = await fetch(`${client.baseURL}/workflows/${params.workflowId}/execute`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${client.apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(params.data || {})
-    });
-    return await response.json();
+    const response = await n8nClient.get(`/executions/${executionId}`);
+    return response.data;
   } catch (error) {
-    throw new Error(`Failed to execute workflow: ${error}`);
+    throw new Error(`Failed to get workflow status: ${error}`);
   }
 }
