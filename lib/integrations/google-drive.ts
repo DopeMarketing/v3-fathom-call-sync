@@ -9,35 +9,39 @@ export interface DriveFile {
   id: string;
   name: string;
   mimeType: string;
-  size?: string;
   createdTime: string;
 }
 
-export interface ListFilesOptions {
-  pageSize?: number;
-  q?: string;
-  orderBy?: string;
+export interface UploadFileParams {
+  name: string;
+  parents?: string[];
+  media: {
+    mimeType: string;
+    body: Buffer | string;
+  };
 }
 
-export async function listFiles(options: ListFilesOptions = {}): Promise<DriveFile[]> {
+export async function listFiles(folderId?: string): Promise<DriveFile[]> {
   try {
     const response = await drive.files.list({
-      pageSize: options.pageSize || 10,
-      q: options.q,
-      orderBy: options.orderBy,
-      fields: 'files(id,name,mimeType,size,createdTime)'
+      q: folderId ? `'${folderId}' in parents` : undefined,
+      fields: 'files(id,name,mimeType,createdTime)'
     });
-    return response.data.files || [];
+    return response.data.files as DriveFile[];
   } catch (error) {
     throw new Error(`Failed to list files: ${error}`);
   }
 }
 
-export async function uploadFile(name: string, content: Buffer, mimeType: string): Promise<DriveFile> {
+export async function uploadFile(params: UploadFileParams): Promise<DriveFile> {
   try {
     const response = await drive.files.create({
-      requestBody: { name },
-      media: { mimeType, body: content }
+      requestBody: {
+        name: params.name,
+        parents: params.parents
+      },
+      media: params.media,
+      fields: 'id,name,mimeType,createdTime'
     });
     return response.data as DriveFile;
   } catch (error) {

@@ -1,97 +1,73 @@
-import Link from 'next/link'
-
 export default async function HistoryPage() {
-  // TODO: Fetch sync job history from database with pagination
-  // TODO: Fetch transcript details for each sync job
-
-  const mockHistory = [
-    {
-      id: 1,
-      date: '2024-01-15T10:30:00Z',
-      status: 'completed',
-      transcriptsCount: 5,
-      duration: '2.3s'
-    },
-    {
-      id: 2,
-      date: '2024-01-14T15:45:00Z',
-      status: 'failed',
-      transcriptsCount: 0,
-      duration: '1.1s',
-      error: 'Authentication expired'
-    }
-  ]
+  // TODO: Fetch sync history from sync_jobs table
+  // TODO: Fetch transcript details from transcripts table
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sync History</h1>
-          <p className="text-gray-600">View detailed history of all sync operations</p>
-        </div>
-        <button className="rounded-md border bg-white px-4 py-2 hover:bg-gray-50">
-          Export History
-        </button>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Sync History</h1>
+        <p className="mt-2 text-gray-600">View detailed history of all sync operations and transcript transfers</p>
       </div>
 
       {/* Filter Controls */}
-      <div className="mb-6 flex space-x-4">
-        <select className="rounded-md border px-3 py-2">
-          <option>All Statuses</option>
-          <option>Completed</option>
-          <option>Failed</option>
-          <option>In Progress</option>
-        </select>
-        <input
-          type="date"
-          className="rounded-md border px-3 py-2"
-          placeholder="From date"
-        />
-        <input
-          type="date"
-          className="rounded-md border px-3 py-2"
-          placeholder="To date"
-        />
+      <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <div className="flex flex-wrap gap-4 items-center">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+            <select className="border border-gray-300 rounded-md px-3 py-2 text-sm">
+              <option>Last 7 days</option>
+              <option>Last 30 days</option>
+              <option>Last 90 days</option>
+              <option>All time</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select className="border border-gray-300 rounded-md px-3 py-2 text-sm">
+              <option>All statuses</option>
+              <option>Success</option>
+              <option>Failed</option>
+              <option>In Progress</option>
+            </select>
+          </div>
+          <div className="ml-auto">
+            <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+              Export CSV
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* History Table */}
-      <div className="rounded-lg border bg-white">
-        <table className="w-full">
-          <thead className="border-b bg-gray-50">
+      {/* Sync History Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold">Date</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">Status</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">Transcripts</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">Duration</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">Details</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date & Time
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Transcripts
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Duration
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
-            {mockHistory.map((job) => (
-              <tr key={job.id} className="border-b">
-                <td className="px-6 py-4 text-sm">
-                  {new Date(job.date).toLocaleString()}
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`inline-flex rounded-full px-2 py-1 text-xs ${
-                    job.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {job.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm">{job.transcriptsCount}</td>
-                <td className="px-6 py-4 text-sm">{job.duration}</td>
-                <td className="px-6 py-4 text-sm">{job.error || '-'}</td>
-              </tr>
-            ))}
+          <tbody className="bg-white divide-y divide-gray-200">
+            <tr>
+              <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                No sync history available yet. Connect your accounts and run your first sync.
+              </td>
+            </tr>
           </tbody>
         </table>
-      </div>
-
-      <div className="mt-8">
-        <Link href="/dashboard" className="text-blue-600 hover:text-blue-700">
-          ← Back to Dashboard
-        </Link>
       </div>
     </div>
   )

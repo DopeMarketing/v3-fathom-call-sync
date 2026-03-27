@@ -1,93 +1,93 @@
 # Technical Debt
 
-This document tracks known shortcuts and areas where the current implementation differs from production-grade standards. Each item includes what needs to be improved and estimated time to resolve.
+This file tracks known shortcuts, missing production features, and areas that need improvement before this becomes a production-grade application.
 
-## Current State vs Production-Grade
+## What is Technical Debt?
 
-This scaffold prioritizes rapid development and iteration. The items below represent conscious trade-offs that should be addressed before production deployment or as the application scales.
-
----
-
-## 1. Error Handling and Logging
-
-**Current State**: Basic `console.log()` statements and generic error messages
-
-**Production-Grade**: Structured logging with levels, error tracking service integration (Sentry/LogRocket), user-friendly error messages with actionable guidance, and comprehensive error boundaries
-
-**Estimated Hours**: 8 hours
+Technical debt represents the difference between what we built quickly to ship features and what a production-grade system should look like. Each item below has an estimated time to resolve.
 
 ---
 
-## 2. API Rate Limiting and Throttling
+## 1. Basic Error Handling (~3 hours)
 
-**Current State**: No rate limiting on API endpoints or external API calls
+**What it is**: Current error handling uses basic `console.log()` statements and generic error messages.
 
-**Production-Grade**: Implement rate limiting middleware, respect external API limits with exponential backoff, queue management for bulk operations, and graceful degradation under load
+**What production-grade looks like**: Structured error handling with proper error boundaries, user-friendly error messages, error categorization (network, auth, validation), and integration with error monitoring service like Sentry.
 
-**Estimated Hours**: 12 hours
-
----
-
-## 3. OAuth Token Security and Management
-
-**Current State**: Basic token storage in database with minimal encryption
-
-**Production-Grade**: Token encryption at rest, automatic refresh handling, token rotation policies, and secure key management with services like AWS KMS or HashiCorp Vault
-
-**Estimated Hours**: 15 hours
+**Resolution approach**: Implement error boundary components, create error classification system, add user-friendly error states.
 
 ---
 
-## 4. Database Performance and Optimization
+## 2. No Rate Limiting (~4 hours)
 
-**Current State**: Basic indexes and no query optimization
+**What it is**: API routes have no rate limiting protection against abuse or accidental spam.
 
-**Production-Grade**: Proper indexing strategy, query performance monitoring, connection pooling, read replicas for heavy queries, and database performance profiling
+**What production-grade looks like**: Proper rate limiting on all API endpoints, especially OAuth callbacks and sync triggers. Should include user-specific limits, IP-based limits, and proper HTTP 429 responses.
 
-**Estimated Hours**: 10 hours
-
----
-
-## 5. Testing Infrastructure
-
-**Current State**: No automated testing suite
-
-**Production-Grade**: Unit tests for business logic, integration tests for API endpoints, end-to-end tests for critical user flows, and CI/CD pipeline with test automation
-
-**Estimated Hours**: 20 hours
+**Resolution approach**: Implement rate limiting middleware using Upstash Redis or similar, add rate limit headers, create user feedback for limit hits.
 
 ---
 
-## 6. Image and Asset Optimization
+## 3. No Structured Logging (~2 hours)
 
-**Current State**: No image optimization or lazy loading
+**What it is**: Logging uses basic console statements without structured data or proper log levels.
 
-**Production-Grade**: Next.js Image component implementation, lazy loading for better performance, WebP/AVIF format support, and CDN integration for asset delivery
+**What production-grade looks like**: Structured JSON logging with proper log levels (debug, info, warn, error), request tracing, and integration with monitoring services. Should include user IDs, sync job IDs, and timing information.
 
-**Estimated Hours**: 6 hours
-
----
-
-## 7. Data Validation and Sanitization
-
-**Current State**: Basic form validation with minimal server-side checks
-
-**Production-Grade**: Comprehensive input validation using Zod schemas, SQL injection protection, XSS prevention, and data sanitization for all user inputs
-
-**Estimated Hours**: 8 hours
+**Resolution approach**: Implement logging library (Winston or Pino), create log correlation IDs, add structured log events.
 
 ---
 
-## 8. Monitoring and Observability
+## 4. RLS Policies Need Security Audit (~5 hours)
 
-**Current State**: No application performance monitoring or health checks
+**What it is**: Row Level Security policies are basic and haven't been thoroughly reviewed for edge cases.
 
-**Production-Grade**: Application performance monitoring (APM), health check endpoints, uptime monitoring, performance metrics collection, and alerting for critical failures
+**What production-grade looks like**: Comprehensive RLS policies that prevent any data leakage between users, handle edge cases like deleted users, and include policies for all tables including audit trails.
 
-**Estimated Hours**: 12 hours
+**Resolution approach**: Security audit of all policies, test with various user scenarios, add policies for admin access patterns.
 
 ---
 
-## Total Estimated Debt Resolution: 91 hours
+## 5. No Automated Testing (~8 hours)
 
-These items should be prioritized based on user feedback, scaling needs, and security requirements. Address security-related debt (items 3, 7) before public deployment.
+**What it is**: No test suite exists for critical functionality like OAuth flows, sync operations, or duplicate detection.
+
+**What production-grade looks like**: Comprehensive test suite with unit tests for business logic, integration tests for API endpoints, and end-to-end tests for critical user flows like OAuth and sync.
+
+**Resolution approach**: Set up Jest and Testing Library, write tests for core sync logic, create test fixtures for API responses.
+
+---
+
+## 6. OAuth Token Refresh Logic Missing (~3 hours)
+
+**What it is**: OAuth implementation doesn't handle token expiration and refresh automatically.
+
+**What production-grade looks like**: Automatic token refresh with retry logic, graceful handling of permanently invalid tokens, and user notification when re-authentication is needed.
+
+**Resolution approach**: Implement token refresh middleware, add expiration checking, create re-auth user flows.
+
+---
+
+## 7. No File Upload Progress Tracking (~4 hours)
+
+**What it is**: Large file uploads happen without progress feedback to users.
+
+**What production-grade looks like**: Real-time progress bars for individual files and overall sync progress, estimated time remaining, and ability to pause/resume uploads.
+
+**Resolution approach**: Implement chunked uploads with progress callbacks, add WebSocket or Server-Sent Events for real-time updates.
+
+---
+
+## 8. Basic Input Validation (~2 hours)
+
+**What it is**: Form inputs and API parameters use basic validation without proper sanitization.
+
+**What production-grade looks like**: Comprehensive input validation using Zod schemas, proper sanitization of user inputs, and validation on both client and server sides.
+
+**Resolution approach**: Create Zod schemas for all forms and API endpoints, implement validation middleware, add client-side validation feedback.
+
+---
+
+**Total Estimated Resolution Time: 31 hours**
+
+*Note: These are Claude Code hours with AI assistance. Traditional development would be 3-5x longer.*

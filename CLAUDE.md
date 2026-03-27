@@ -1,155 +1,158 @@
-# CLAUDE.md — V3 Fathom Call Sync Development Brief
+# V3 Fathom Call Sync — Claude Development Brief
 
 ## Project Overview
 
-V3 Fathom Call Sync is a personal productivity tool that syncs Fathom meeting transcripts to Google Drive with OAuth authentication and smart duplicate detection. This is a dashboard-heavy application built for personal use with potential for automation workflow integration.
+V3 Fathom Call Sync is a dashboard-heavy tool that connects Fathom meeting recordings to Google Drive, automatically syncing transcripts as organized text files. This is a personal productivity tool focused on seamless OAuth integration and reliable bulk data transfer.
 
 ## Tech Stack
 
 - **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS
-- **Backend**: Supabase (PostgreSQL + Auth + RLS)
-- **Integrations**: Google Drive API, Fathom API, n8n, Pipedream, Google Sheets
+- **Backend**: Next.js API routes, Server Actions
+- **Database**: Supabase (PostgreSQL)
+- **APIs**: Google Drive API, Fathom API, Google Sheets API
 - **Deployment**: Vercel
+- **Integrations**: n8n, Pipedream for advanced workflows
 
 ## Folder Structure
 
 
-app/
-├── (auth)/                 # Authentication pages and callbacks
-├── api/                    # API routes for sync operations
-├── dashboard/              # Main dashboard and settings pages
-├── connections/            # OAuth connection management
-├── history/               # Sync job history and logs
-└── settings/              # User preferences and configuration
-
-components/
-├── ui/                    # Shadcn/ui components (Button, Card, etc.)
-├── dashboard/             # Dashboard-specific components
-├── auth/                  # Authentication forms and flows
-└── sync/                  # Sync status and controls
-
-lib/
-├── auth.ts               # NextAuth configuration
-├── supabase.ts          # Supabase client setup
-├── google-drive.ts      # Google Drive API wrapper
-├── fathom.ts            # Fathom API integration
-├── sync-engine.ts       # Core sync logic and orchestration
-└── utils.ts             # General utilities
-
-db/
-├── queries.ts           # Database queries (SELECT only)
-├── mutations.ts         # Database mutations (INSERT/UPDATE/DELETE)
-└── types.ts             # Database type definitions
-
-actions/
-├── auth.ts              # Authentication server actions
-├── sync.ts              # Sync operation server actions
-└── connections.ts       # OAuth connection server actions
-
-supabase/
-├── migrations/          # Database migration files
-├── config.toml         # Supabase configuration
-└── seed.sql            # Development seed data
+src/
+├── app/                    # Next.js 15 App Router
+│   ├── (auth)/            # Auth callback pages
+│   ├── dashboard/         # Main app dashboard
+│   ├── connections/       # OAuth management
+│   ├── history/          # Sync history
+│   ├── settings/         # User preferences
+│   ├── api/              # API routes
+│   ├── layout.tsx        # Root layout
+│   └── page.tsx          # Landing page
+├── components/            # Reusable UI components
+│   ├── ui/               # Base components (shadcn/ui style)
+│   ├── auth/             # Authentication components
+│   ├── dashboard/        # Dashboard-specific components
+│   └── sync/             # Sync process components
+├── lib/                  # Business logic and utilities
+│   ├── auth.ts           # Authentication logic
+│   ├── google-drive.ts   # Google Drive integration
+│   ├── fathom.ts         # Fathom API integration
+│   ├── sync.ts           # Core sync logic
+│   └── utils.ts          # General utilities
+├── db/                   # Database access layer
+│   ├── schema.ts         # Database types
+│   ├── queries.ts        # Database queries
+│   └── supabase.ts       # Supabase client
+├── actions/              # Server Actions
+│   ├── auth.ts           # Auth-related actions
+│   ├── sync.ts           # Sync-related actions
+│   └── connections.ts    # OAuth connection actions
+└── types/                # TypeScript definitions
+    ├── fathom.ts         # Fathom API types
+    ├── google.ts         # Google API types
+    └── database.ts       # Database types
 
 
 ## Coding Conventions
 
 - **TypeScript**: Strict mode enabled, no `any` types
-- **React**: Server Components by default, Client Components only when needed
-- **Data Access**: All database queries in `/db` directory only
-- **Business Logic**: Core logic in `/lib`, server actions in `/actions`
+- **Components**: Server Components by default, Client Components only when needed
+- **Data Access**: Only in `/db` directory, never directly in components
+- **Business Logic**: Only in `/lib` and `/actions`, never in components
 - **Security**: No API keys or secrets in client components
 - **Styling**: Tailwind CSS with consistent design system
-- **Error Handling**: Structured error responses with user-friendly messages
+- **Error Handling**: Proper error boundaries and user-friendly messages
 
-## Current State: Scaffold Complete
+## Current State: Scaffold
 
-This project has been scaffolded with:
+This project starts with a complete scaffold including:
 
-✅ **Database Schema**: 7 tables with RLS policies
-- `users`, `oauth_connections`, `sync_configurations`
-- `fathom_transcripts`, `sync_jobs`, `sync_job_items`, `uploaded_files`
-
-✅ **Route Structure**: 9 pages from sitemap
-- Dashboard, connections, history, settings, auth callbacks, API endpoints
-
-✅ **Integration Stubs**: Ready for Google Drive, Fathom, n8n, Pipedream
-
-✅ **Documentation**: Complete README, roadmap, technical debt tracking
+✅ **Database Schema**: All 7 tables defined with proper relationships
+✅ **Route Structure**: All 9 pages from sitemap with basic layouts
+✅ **Integration Stubs**: Ready-to-implement API wrappers
+✅ **Authentication Flow**: OAuth callback routes prepared
+✅ **UI Foundation**: Tailwind setup with dashboard layout
+✅ **Type Definitions**: Complete TypeScript interfaces
 
 ## What to Build Next: V1 Features
 
-### Priority 1: Core Authentication
-1. **OAuth Flow Setup** - Google Drive and Fathom API authentication
-2. **Token Management** - Secure storage and refresh handling
-3. **Connection Status UI** - Dashboard showing connected services
+### 1. One-click OAuth authentication
+- Implement OAuth flows for Fathom and Google Drive
+- Secure token storage in Supabase
+- Token refresh logic
+- Connection status indicators
 
-### Priority 2: Sync Engine
-1. **Fathom API Integration** - Fetch transcript list and content
-2. **Google Drive Upload** - Create folder structure and upload files
-3. **Duplicate Detection** - Smart handling of existing files
-4. **Manual Sync Trigger** - One-click sync button with progress
+### 2. Bulk transcript export
+- Fathom API integration to fetch all transcripts
+- Google Drive API integration for file uploads
+- Progress tracking and status updates
+- Error handling for failed uploads
 
-### Priority 3: Dashboard Experience
-1. **Sync Status Display** - Real-time progress and results
-2. **Transcript Management** - View available and uploaded transcripts
-3. **Basic Error Handling** - User-friendly error messages
+### 3. Basic sync status dashboard
+- Real-time progress display
+- Success/failure metrics
+- Transcript count summaries
+- Recent sync history
+
+### 4. Manual sync trigger
+- One-click sync initiation
+- Background job processing
+- User notification system
+- Sync cancellation capability
+
+### 5. Smart duplicate detection
+- File comparison logic
+- Skip existing files
+- Update modified transcripts
+- User notification of skipped files
 
 ## Never Touch Rules
 
-🚫 **Environment Files**: Never commit `.env*` files or expose secrets
+🚫 **Never modify**:
+- `.env` files without explicit instruction
+- Database migration files without explicit review
+- RLS policies without security review
+- Supabase configuration files
 
-🚫 **Migration Files**: Don't edit existing migrations without explicit instruction
-
-🚫 **RLS Policies**: Don't modify Row Level Security without security review
-
-🚫 **Production Data**: Never use real API keys or production data in development
+🚫 **Never commit**:
+- API keys or secrets
+- `.env.local` files
+- Personal data or test transcripts
 
 ## How to Work on This Project
 
-### Before Every Session
-1. **Read this file** - Always start here for context
-2. **Check current branch** - Ensure you're on the right branch
-3. **Review recent commits** - Understand what changed recently
+### Before Starting
+1. **Always read this file first** to understand current state
+2. **Check TECHNICAL_DEBT.md** for known issues
+3. **Review the specific feature requirements** in the roadmap
 
 ### Development Workflow
-1. **Small commits** - Commit working features incrementally
-2. **Test before commit** - Always run `npm run build` to check for errors
-3. **Conventional commits** - Use format: `feat:`, `fix:`, `docs:`, `refactor:`
-4. **Document debt** - Add technical shortcuts to `TECHNICAL_DEBT.md`
+1. **Start with data layer**: Define types and database queries
+2. **Build business logic**: Implement in `/lib` or `/actions`
+3. **Create UI components**: Server Components first
+4. **Add error handling**: User-friendly error states
+5. **Test integration flows**: OAuth and API calls
 
-### Integration Development
-1. **Start with stubs** - Get basic API connections working first
-2. **Test with real data** - Use actual Fathom/Google Drive accounts
-3. **Handle rate limits** - Implement proper API throttling
-4. **Error scenarios** - Test network failures, auth expiry, etc.
+### Before Committing
+1. **Run build check**: `npm run build` must pass
+2. **Check TypeScript**: No type errors
+3. **Test core flows**: OAuth and sync processes
+4. **Update documentation**: Add any new technical debt
 
-### Security Checklist
-- OAuth tokens stored in database, not client
-- API calls only from server components or API routes
-- Input validation on all forms
-- Proper error handling without exposing internals
+### Commit Guidelines
+- **Use conventional commits**: `feat:`, `fix:`, `docs:`, `refactor:`
+- **Commit small and often**: Single feature per commit
+- **Document technical debt**: Add to TECHNICAL_DEBT.md if taking shortcuts
 
-## Database Schema Notes
+## Integration Priority
 
-- `users` table uses Supabase Auth integration
-- `oauth_connections` stores encrypted refresh tokens
-- `sync_jobs` tracks background processes with status
-- `sync_job_items` provides granular upload tracking
-- All tables have proper RLS policies for user isolation
+1. **Google Drive API** - Core functionality
+2. **Fathom API** - Core functionality  
+3. **Google Sheets API** - Roadmap feature
+4. **n8n/Pipedream** - Advanced automation features
 
-## API Integration Patterns
+## Key Success Metrics
 
-- Use environment variables for all API credentials
-- Implement exponential backoff for API retries
-- Cache frequently accessed data (transcript metadata)
-- Log API calls for debugging (but not sensitive data)
-
-## Testing Strategy
-
-- Manual testing with real integrations during development
-- Unit tests for core sync logic
-- Integration tests for API connections
-- End-to-end testing for complete sync workflows
-
-This is a living document - update it as the project evolves!
+- OAuth flows work seamlessly
+- Bulk uploads handle 100+ transcripts
+- Duplicate detection is 100% accurate
+- Dashboard provides clear status visibility
+- Zero data loss during sync operations

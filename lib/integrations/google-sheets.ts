@@ -7,44 +7,43 @@ const sheets = google.sheets({
 
 export interface SheetData {
   range: string;
+  majorDimension: string;
   values: string[][];
 }
 
-export interface UpdateValuesOptions {
+export interface UpdateSheetParams {
   spreadsheetId: string;
   range: string;
   values: string[][];
-  valueInputOption?: 'RAW' | 'USER_ENTERED';
 }
 
-export interface GetValuesOptions {
-  spreadsheetId: string;
-  range: string;
-}
-
-export async function getValues(options: GetValuesOptions): Promise<string[][]> {
+export async function getSheetData(spreadsheetId: string, range: string): Promise<SheetData> {
   try {
     const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: options.spreadsheetId,
-      range: options.range
+      spreadsheetId,
+      range
     });
-    return response.data.values || [];
+    return {
+      range: response.data.range!,
+      majorDimension: response.data.majorDimension!,
+      values: response.data.values || []
+    };
   } catch (error) {
-    throw new Error(`Failed to get sheet values: ${error}`);
+    throw new Error(`Failed to get sheet data: ${error}`);
   }
 }
 
-export async function updateValues(options: UpdateValuesOptions): Promise<void> {
+export async function updateSheetData(params: UpdateSheetParams): Promise<void> {
   try {
     await sheets.spreadsheets.values.update({
-      spreadsheetId: options.spreadsheetId,
-      range: options.range,
-      valueInputOption: options.valueInputOption || 'USER_ENTERED',
+      spreadsheetId: params.spreadsheetId,
+      range: params.range,
+      valueInputOption: 'RAW',
       requestBody: {
-        values: options.values
+        values: params.values
       }
     });
   } catch (error) {
-    throw new Error(`Failed to update sheet values: ${error}`);
+    throw new Error(`Failed to update sheet data: ${error}`);
   }
 }

@@ -1,4 +1,14 @@
-interface N8nWorkflow {
+interface N8nClient {
+  baseURL: string;
+  apiKey: string;
+}
+
+const client: N8nClient = {
+  baseURL: 'https://your-n8n-instance.com/api/v1',
+  apiKey: process.env.N8N_API_KEY!
+};
+
+export interface Workflow {
   id: string;
   name: string;
   active: boolean;
@@ -6,58 +16,38 @@ interface N8nWorkflow {
   updatedAt: string;
 }
 
-interface N8nExecution {
-  id: string;
+export interface ExecuteWorkflowParams {
   workflowId: string;
-  finished: boolean;
-  mode: string;
-  startedAt: string;
-  stoppedAt?: string;
+  data?: Record<string, any>;
 }
 
-class N8nClient {
-  private baseUrl: string;
-  private apiKey: string;
-
-  constructor() {
-    this.baseUrl = process.env.N8N_BASE_URL || 'http://localhost:5678';
-    this.apiKey = process.env.N8N_API_KEY!;
-  }
-
-  private async request(endpoint: string, options: RequestInit = {}) {
-    const response = await fetch(`${this.baseUrl}/api/v1${endpoint}`, {
-      ...options,
+export async function getWorkflows(): Promise<Workflow[]> {
+  try {
+    const response = await fetch(`${client.baseURL}/workflows`, {
       headers: {
-        'X-N8N-API-KEY': this.apiKey,
-        'Content-Type': 'application/json',
-        ...options.headers
+        'Authorization': `Bearer ${client.apiKey}`,
+        'Content-Type': 'application/json'
       }
     });
-    return response.json();
-  }
-
-  async getWorkflows(): Promise<N8nWorkflow[]> {
-    try {
-      const data = await this.request('/workflows');
-      return data.data || [];
-    } catch (error) {
-      throw new Error(`Failed to get workflows: ${error}`);
-    }
-  }
-
-  async executeWorkflow(workflowId: string, data: any = {}): Promise<N8nExecution> {
-    try {
-      const response = await this.request(`/workflows/${workflowId}/execute`, {
-        method: 'POST',
-        body: JSON.stringify(data)
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(`Failed to execute workflow: ${error}`);
-    }
+    const data = await response.json();
+    return data.workflows;
+  } catch (error) {
+    throw new Error(`Failed to get workflows: ${error}`);
   }
 }
 
-const n8nClient = new N8nClient();
-
-export const { getWorkflows, executeWorkflow } = n8nClient;
+export async function executeWorkflow(params: ExecuteWorkflowParams): Promise<any> {
+  try {
+    const response = await fetch(`${client.baseURL}/workflows/${params.workflowId}/execute`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${client.apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params.data || {})
+    });
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Failed to execute workflow: ${error}`);
+  }
+}

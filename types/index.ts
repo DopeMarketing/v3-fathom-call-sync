@@ -13,7 +13,7 @@ export interface OAuthConnection {
   refresh_token: string | null;
   expires_at: Date | null;
   scope: string | null;
-  account_info: any | null;
+  account_info: any;
   is_active: boolean;
   created_at: Date;
   updated_at: Date;
@@ -41,7 +41,7 @@ export interface FathomTranscript {
   duration_minutes: number | null;
   participant_count: number | null;
   content_hash: string | null;
-  metadata: any | null;
+  metadata: any;
   last_fetched_at: Date;
   created_at: Date;
 }
